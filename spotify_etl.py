@@ -32,8 +32,8 @@ def check_if_valid_data(df: pd.DataFrame) -> bool:
         raise Exception("Null values found")
 
     # Check that all timestamps are of yesterday's date
-    yesterday = datetime.datetime.now() - datetime.timedelta(days=0)
-    yesterday = yesterday.replace(hour=0, minute=0, second=0, microsecond=0)
+    # yesterday = datetime.datetime.now() - datetime.timedelta(days=60)
+    # yesterday = yesterday.replace(hour=0, minute=0, second=0, microsecond=0)
 
     # timestamps = df["timestamp"].tolist()
     # for timestamp in timestamps:
@@ -54,10 +54,11 @@ if __name__ == "__main__":
     
     # Convert time to Unix timestamp in miliseconds      
     today = datetime.datetime.now()
-    yesterday_unix_timestamp = int(today.timestamp()) * 1000
+    yesterday = today - datetime.timedelta(days=60)
+    yesterday_unix_timestamp = int(yesterday.timestamp()) * 1000
 
     # Download all songs you've listened to "after yesterday", which means in the last 24 hours      
-    r = requests.get("https://api.spotify.com/v1/me/player/recently-played?limit=5", headers = headers)
+    r = requests.get("https://api.spotify.com/v1/me/player/recently-played?after={time}".format(time=yesterday_unix_timestamp), headers = headers)
 
     data = r.json()
 
